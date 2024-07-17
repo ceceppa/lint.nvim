@@ -71,11 +71,11 @@ M.init = function(notification_interval)
                 title = 'Lint'
             })
         end, notification_interval or 0)
-    else
-        vim.notify('No package.json found', 'warn', {
-            title = 'Lint'
-        })
+
+        return true
     end
+
+    return false
 end
 
 M.stop = function()
@@ -85,7 +85,13 @@ end
 M.run = function()
     _should_stop = false
 
-    M.check()
+    local has_package_json = M.check()
+
+    if not has_package_json then
+        vim.notify('No package.json found', 'warn', {
+            title = 'Lint'
+        })
+    end
 end
 
 M.get_output = function()
