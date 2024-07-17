@@ -54,7 +54,8 @@ The default configuration is:
     lint_command = 'lint',
     auto_open_qflist = false,
     watch_pattern = "*.{ts,tsx,js,jsx}",
-    use_diagnostic = false
+    use_diagnostic = false,
+    package_manager = 'yarn'
 }
 ```
 
@@ -98,11 +99,7 @@ Prints the `get_output` content for debug purpose
 
 #### show_qflist
 
-```
-require('lint').show_quickfix()
-```
-
-Or `:Lint show`, manually shows the quickfix list
+Use the command `:Lint show` to manually shows the quickfix list
 
 ## Diagnostic
 
