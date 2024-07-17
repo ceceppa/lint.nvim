@@ -93,11 +93,12 @@ M.setup = function(opts)
     config = vim.tbl_deep_extend("force", config, DEFAULT_CONFIG, opts or {})
 
     if config.auto_start then
-        M.init()
-
-        vim.notify('Linting started', 'info', {
-            title = 'Lint'
-        })
+        vim.defer_fn(function()
+            M.init()
+            vim.notify('Linting started', 'info', {
+                title = 'Lint'
+            })
+        end, 1000)
     end
 end
 
