@@ -79,6 +79,12 @@ M.get_output = function()
     return _lint_output
 end
 
+M.print_output = function()
+    for _, output in ipairs(_lint_output) do
+        print(output)
+    end
+end
+
 M.is_running = function()
     return _is_running
 end
@@ -88,6 +94,10 @@ M.setup = function(opts)
 
     if config.auto_start then
         M.init()
+
+        vim.notify('Linting started', 'info', {
+            title = 'Lint'
+        })
     end
 end
 
