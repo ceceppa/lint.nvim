@@ -1,6 +1,5 @@
 local exec_async = require('execAsync').exec_async
 local parser = require('lint.parser')
-local package_manager = 'yarn'
 
 local M = {}
 
@@ -15,7 +14,8 @@ local DEFAULT_CONFIG = {
     auto_start = true,
     lint_command = 'lint',
     auto_open_qflist = false,
-    watch_pattern = "*.{ts,tsx,js,jsx}"
+    watch_pattern = "*.{ts,tsx,js,jsx}",
+    package_manager = 'yarn'
 }
 
 M.check = function(is_silent)
@@ -25,14 +25,14 @@ M.check = function(is_silent)
 
     _is_running = true
 
-    exec_async(package_manager .. ' ' .. config.lint_command, function(data)
+    exec_async(config.package_manager .. ' ' .. config.lint_command, function(data)
         _lint_output = parser.parse(config, data)
 
         _is_running = false
     end, is_silent)
 end
 
-M.init = function()
+M.init = function(notification_interval)
     if vim.fn.filereadable('package.json') == 1 then
         local scripts = vim.fn.json_decode(vim.fn.readfile('package.json'))['scripts']
 
@@ -44,6 +44,9 @@ M.init = function()
         local lint_command = vim.fn.json_decode(vim.fn.readfile('package.json'))['scripts'][config.lint_command]
 
         if lint_command == nil then
+            vim.notify('No lint command (' .. config.lint_command .. ') found in package.json', 'warn', {
+                title = 'Lint'
+            })
             return
         end
 
@@ -52,7 +55,7 @@ M.init = function()
 
         if manager ~= nil then
             -- retrieve the name of the package manager from the format "name@version"
-            package_manager = manager:match("([^@]+)")
+            config.package_manager = manager:match("([^@]+)")
         end
 
         vim.api.nvim_create_autocmd("BufWritePost", {
@@ -61,6 +64,16 @@ M.init = function()
             callback = function()
                 M.check(true)
             end,
+        })
+
+        vim.defer_fn(function()
+            vim.notify('Linting started', 'info', {
+                title = 'Lint'
+            })
+        end, notification_interval or 0)
+    else
+        vim.notify('No package.json found', 'warn', {
+            title = 'Lint'
         })
     end
 end
@@ -93,12 +106,7 @@ M.setup = function(opts)
     config = vim.tbl_deep_extend("force", config, DEFAULT_CONFIG, opts or {})
 
     if config.auto_start then
-        vim.defer_fn(function()
-            M.init()
-            vim.notify('Linting started', 'info', {
-                title = 'Lint'
-            })
-        end, 1000)
+        M.init(1000)
     end
 end
 
