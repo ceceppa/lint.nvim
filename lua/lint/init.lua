@@ -12,10 +12,10 @@ local function init(notification_interval)
         end
 
         -- Check if there is a "lint" command in the package.json
-        local lint_command = vim.fn.json_decode(vim.fn.readfile('package.json'))['scripts'][config.config.lint_command]
+        local lint_command = vim.fn.json_decode(vim.fn.readfile('package.json'))['scripts'][config.get().lint_command]
 
         if lint_command == nil then
-            vim.notify('No lint command (' .. config.config.lint_command .. ') found in package.json', 'warn', {
+            vim.notify('No lint command (' .. config.get().lint_command .. ') found in package.json', 'warn', {
                 title = 'Lint'
             })
             return false
@@ -32,7 +32,7 @@ local function init(notification_interval)
         end
 
         vim.api.nvim_create_autocmd("BufWritePost", {
-            pattern = config.config.watch_pattern,
+            pattern = config.get().watch_pattern,
             desc = "Run lint on save",
             callback = function()
                 lint.check(true)
@@ -56,7 +56,7 @@ end
 local function setup(opts)
     config.set(opts)
 
-    if config.config.auto_start then
+    if config.get().auto_start then
         _is_active = init(1000)
     end
 end
@@ -69,11 +69,27 @@ vim.api.nvim_create_user_command("Lint", function(arguments)
     local args = arguments.fargs
 
     if args[1] == 'stop' then
+        if _is_active then
+            vim.notify('Linting stopped', 'info', {
+                title = 'Lint'
+            })
+
+            is_active = false
+        else
+            vim.notify('Linting is not active', 'warn', {
+                title = 'Lint'
+            })
+        end
+
         lint.stop()
     elseif args[1] == 'show' then
         lint.show_quickfix()
     elseif args[1] == nil then
-        lint.run()
+        vim.notify('Linting...', 'info', {
+            title = 'Lint'
+        })
+
+        _is_active = lint.run()
     else
         vim.notify('Invalid argument', vim.log.levels.ERROR)
     end

@@ -1,6 +1,6 @@
 local exec_async = require('execAsync').exec_async
 local parser = require('lint.parser')
-local config = require('lint.config').config
+local config = require('lint.config')
 
 local M = {}
 
@@ -16,7 +16,7 @@ M.check = function(is_silent)
             })
         end
 
-        return
+        return true
     end
 
     if vim.fn.filereadable('package.json') ~= 1 then
@@ -26,16 +26,18 @@ M.check = function(is_silent)
             })
         end
 
-        return
+        return false
     end
 
     _is_running = true
 
-    exec_async(config.package_manager .. ' ' .. config.lint_command, function(data)
-        _lint_output = parser.parse(config, data)
+    exec_async(config.get().package_manager .. ' ' .. config.get().lint_command, function(data)
+        _lint_output = parser.parse(data)
 
         _is_running = false
     end, is_silent)
+
+    return true
 end
 
 M.stop = function()
@@ -45,7 +47,7 @@ end
 M.run = function()
     _should_stop = false
 
-    M.check()
+    return M.check()
 end
 
 M.get_output = function()
@@ -61,7 +63,7 @@ M.is_running = function()
 end
 
 M.show_quickfix = function()
-    parser.show_qflist(M.get_output(), true)
+    parser.show_quickfix_list(M.get_output(), true)
 end
 
 return M

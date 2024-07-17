@@ -14,7 +14,11 @@ local function set(opts)
     config = vim.tbl_deep_extend("force", config, DEFAULT_CONFIG, opts or {})
 end
 
+local function get()
+    return config
+end
+
 return {
     set = set,
-    config = config
+    get = get
 }

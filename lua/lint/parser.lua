@@ -1,3 +1,5 @@
+local config = require("lint.config")
+
 local function add_diagnostics(errors)
     local namespace_id = vim.api.nvim_create_namespace("lint_diagnostics")
     vim.diagnostic.reset(namespace_id)
@@ -23,7 +25,7 @@ local function add_diagnostics(errors)
     end
 end
 
-local function show_qflist(output, autofocus)
+local function show_quickfix_list(output, autofocus)
     vim.fn.setqflist({}, "r", { title = "Lint", items = output })
 
     local win = vim.api.nvim_get_current_win()
@@ -37,7 +39,7 @@ local function show_qflist(output, autofocus)
     pcall(vim.api.nvim_set_current_win, win)
 end
 
-local function parse_eslint_output(opts, output)
+local function parse_eslint_output(output)
     local errors = {}
 
     if output == nil then
@@ -72,12 +74,12 @@ local function parse_eslint_output(opts, output)
         previous_line = line
     end
 
-    if opts.use_diagnostic then
+    if config.get().use_diagnostic then
         add_diagnostics(errors)
     end
 
-    if opts.auto_open_qflist then
-        show_qflist(errors)
+    if config.get().auto_open_qflist then
+        show_quickfix_list(errors)
     end
 
     return errors
@@ -85,5 +87,5 @@ end
 
 return {
     parse = parse_eslint_output,
-    show_qflist = show_qflist
+    show_quickfix_list = show_quickfix_list
 }
