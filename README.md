@@ -54,6 +54,50 @@ The default configuration is:
     lint_command = 'lint',
     auto_open_qflist = false,
     watch_pattern = "*.{ts,tsx,js,jsx}",
-    use_diagnostics = true
+    use_diagnostic = false
 }
 ```
+
+### Commands
+
+#### is_running
+
+```
+require('lint').is_running()
+```
+
+Returns true while its running the `[package manager] lint` command
+
+#### get_output
+
+```
+require('lint').get_output()
+```
+
+Returns the lint output in the format:
+
+```
+{
+    col,
+    filename,
+    lnum,
+    severity,
+    source,
+    text,
+    type
+}
+```
+
+#### print_output
+
+```
+require('lint').print_output()
+```
+
+Prints the `get_output` content for debug purpose
+
+## Diagnostic
+
+NOTE: When using `use_diagnostic = true`, Neovim will only show errors and warnings for the open buffers!
+If you want to see all errors or warnings, you can either use `auto_open_qflist = true` or the `get_output` content with a custom diagnostic:
+https://github.com/ceceppa/neovim/blob/main/lua/ceceppa/diagnostics.lua

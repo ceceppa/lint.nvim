@@ -15,11 +15,28 @@ local DEFAULT_CONFIG = {
     lint_command = 'lint',
     auto_open_qflist = false,
     watch_pattern = "*.{ts,tsx,js,jsx}",
-    package_manager = 'yarn'
+    package_manager = 'yarn',
+    use_diagnostic = false
 }
 
 M.check = function(is_silent)
-    if vim.fn.filereadable('package.json') ~= 1 or _is_running or _should_stop then
+    if _is_running or _should_stop then
+        if not is_silent then
+            vim.notify('Lint is already running', 'warn', {
+                title = 'Lint'
+            })
+        end
+
+        return
+    end
+
+    if vim.fn.filereadable('package.json') ~= 1 then
+        if not is_silent then
+            vim.notify('No package.json found', 'warn', {
+                title = 'Lint'
+            })
+        end
+
         return
     end
 
@@ -32,7 +49,7 @@ M.check = function(is_silent)
     end, is_silent)
 end
 
-M.init = function(notification_interval)
+local function init(notification_interval)
     if vim.fn.filereadable('package.json') == 1 then
         local scripts = vim.fn.json_decode(vim.fn.readfile('package.json'))['scripts']
 
@@ -67,6 +84,8 @@ M.init = function(notification_interval)
         })
 
         vim.defer_fn(function()
+            M.check(true)
+
             vim.notify('Linting started', 'info', {
                 title = 'Lint'
             })
@@ -85,13 +104,7 @@ end
 M.run = function()
     _should_stop = false
 
-    local has_package_json = M.check()
-
-    if not has_package_json then
-        vim.notify('No package.json found', 'warn', {
-            title = 'Lint'
-        })
-    end
+    M.check()
 end
 
 M.get_output = function()
@@ -99,9 +112,7 @@ M.get_output = function()
 end
 
 M.print_output = function()
-    for _, output in ipairs(_lint_output) do
-        print(output)
-    end
+    print(vim.inspect(M.get_output()))
 end
 
 M.is_running = function()
@@ -112,7 +123,7 @@ M.setup = function(opts)
     config = vim.tbl_deep_extend("force", config, DEFAULT_CONFIG, opts or {})
 
     if config.auto_start then
-        M.init(1000)
+        init(1000)
     end
 end
 

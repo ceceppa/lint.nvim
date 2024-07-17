@@ -1,9 +1,13 @@
 local function add_diagnostics(errors)
-    local namespace_id = vim.api.nvim_create_namespace("tsc_diagnostics")
+    local namespace_id = vim.api.nvim_create_namespace("lint_diagnostics")
     vim.diagnostic.reset(namespace_id)
 
     for _, error in ipairs(errors) do
         local buffer_number = vim.fn.bufnr(error.filename)
+
+        if buffer_number == -1 then
+            return
+        end
 
         local diagnostic = {
             bufnr = buffer_number,
@@ -11,19 +15,28 @@ local function add_diagnostics(errors)
             lnum = error.lnum - 1,
             col = error.col - 1,
             severity = error.severity,
-            message = error.message,
-            source = "eslint",
+            message = error.text,
+            source = "lint",
         }
 
         vim.diagnostic.set(namespace_id, buffer_number, { diagnostic }, {})
     end
 end
 
+local function show_qflist(output)
+    vim.fn.setqflist({}, "r", { title = "Lint", items = output })
+
+    local win = vim.api.nvim_get_current_win()
+
+    vim.cmd("copen")
+    pcall(vim.api.nvim_set_current_win, win)
+end
+
 local function parse_eslint_output(opts, output)
     local errors = {}
 
     if output == nil then
-        return errors
+        output = {}
     end
 
     local previous_line = ""
@@ -37,14 +50,16 @@ local function parse_eslint_output(opts, output)
 
             if type ~= "ERROR" then
                 severity = vim.diagnostic.severity.WARN
+                type = "WARN"
             end
 
             table.insert(errors, {
                 filename = previous_line,
                 lnum = tonumber(line_number),
                 col = tonumber(col_number),
-                message = message,
+                text = message,
                 severity = severity,
+                type = type,
                 source = "eslint"
             })
         end
@@ -52,10 +67,13 @@ local function parse_eslint_output(opts, output)
         previous_line = line
     end
 
-    if opts.use_diagnostics then
+    if opts.use_diagnostic then
         add_diagnostics(errors)
     end
 
+    if opts.auto_open_qflist then
+        show_qflist(errors)
+    end
 
     return errors
 end
