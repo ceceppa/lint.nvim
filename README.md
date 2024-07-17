@@ -102,7 +102,7 @@ Prints the `get_output` content for debug purpose
 require('lint').show_quickfix()
 ```
 
-Manually shows the quickfix list
+Or `:Lint show`, manually shows the quickfix list
 
 ## Diagnostic
 

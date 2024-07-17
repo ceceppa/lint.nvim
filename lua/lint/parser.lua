@@ -23,12 +23,17 @@ local function add_diagnostics(errors)
     end
 end
 
-local function show_qflist(output)
+local function show_qflist(output, autofocus)
     vim.fn.setqflist({}, "r", { title = "Lint", items = output })
 
     local win = vim.api.nvim_get_current_win()
 
     vim.cmd("copen")
+
+    if autofocus then
+        return
+    end
+
     pcall(vim.api.nvim_set_current_win, win)
 end
 

@@ -120,7 +120,7 @@ M.is_running = function()
 end
 
 M.show_quickfix = function()
-    parser.show_qflist(M.get_output())
+    parser.show_qflist(M.get_output(), true)
 end
 
 M.setup = function(opts)
