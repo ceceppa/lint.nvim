@@ -5,6 +5,7 @@ local package_manager = 'yarn'
 local M = {}
 
 local _is_running = false
+local _should_stop = false
 local _lint_output = {}
 
 local config = {}
@@ -18,7 +19,7 @@ local DEFAULT_CONFIG = {
 }
 
 M.check = function(is_silent)
-    if vim.fn.filereadable('package.json') ~= 1 or _is_running then
+    if vim.fn.filereadable('package.json') ~= 1 or _is_running or _should_stop then
         return
     end
 
@@ -62,6 +63,16 @@ M.init = function()
             end,
         })
     end
+end
+
+M.stop = function()
+    _should_stop = true
+end
+
+M.run = function()
+    _should_stop = false
+
+    M.check()
 end
 
 M.get_output = function()
