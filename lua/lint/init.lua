@@ -9,12 +9,4 @@ vim.api.nvim_create_user_command("Lint", function(args)
 end, { desc = 'Run Linting', nargs = '*' })
 
 
-return {
-    setup = package.setup,
-    init = package.init,
-	check = package.check,
-    run = package.run,
-    get_output = package.get_output,
-    is_running = package.is_running,
-}
-
+return package
