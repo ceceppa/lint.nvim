@@ -96,6 +96,14 @@ require('lint').print_output()
 
 Prints the `get_output` content for debug purpose
 
+#### show_qflist
+
+```
+require('lint').show_quickfix()
+```
+
+Manually shows the quickfix list
+
 ## Diagnostic
 
 NOTE: When using `use_diagnostic = true`, Neovim will only show errors and warnings for the open buffers!

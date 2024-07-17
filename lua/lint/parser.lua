@@ -79,5 +79,6 @@ local function parse_eslint_output(opts, output)
 end
 
 return {
-    parse = parse_eslint_output
+    parse = parse_eslint_output,
+    show_qflist = show_qflist
 }

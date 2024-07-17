@@ -119,6 +119,10 @@ M.is_running = function()
     return _is_running
 end
 
+M.show_quickfix = function()
+    parser.show_qflist(M.get_output())
+end
+
 M.setup = function(opts)
     config = vim.tbl_deep_extend("force", config, DEFAULT_CONFIG, opts or {})
 
