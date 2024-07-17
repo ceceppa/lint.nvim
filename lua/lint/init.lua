@@ -74,7 +74,7 @@ vim.api.nvim_create_user_command("Lint", function(arguments)
                 title = 'Lint'
             })
 
-            is_active = false
+            _is_active = false
         else
             vim.notify('Linting is not active', 'warn', {
                 title = 'Lint'
