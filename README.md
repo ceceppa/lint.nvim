@@ -33,7 +33,7 @@ use {
 To set up the plugin, add the following line to your init.vim or init.lua file:
 
 ```
-require('tsc').setup()
+require('lint').setup()
 ```
 
 ## Usage
