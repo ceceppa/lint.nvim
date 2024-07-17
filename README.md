@@ -109,3 +109,11 @@ Or `:Lint show`, manually shows the quickfix list
 NOTE: When using `use_diagnostic = true`, Neovim will only show errors and warnings for the open buffers!
 If you want to see all errors or warnings, you can either use `auto_open_qflist = true` or the `get_output` content with a custom diagnostic:
 https://github.com/ceceppa/neovim/blob/main/lua/ceceppa/diagnostics.lua
+
+## Contributing
+
+Feel free to open issues or submit pull requests if you encounter any bugs or have suggestions for improvements. Your contributions are welcome!
+
+## License
+
+This plugin is released under the MIT License. See the LICENSE file for details.
