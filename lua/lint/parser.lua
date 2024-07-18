@@ -84,8 +84,8 @@ local function parse_eslint_output(output)
                 type = "WARN"
             end
 
-            local lnum = tonumber(line_number)
-            local col = tonumber(col_number)
+            local lnum = tonumber(line_number) - 1
+            local col = tonumber(col_number) - 1
 
             table.insert(errors, {
                 filename = previous_line,
