@@ -69,9 +69,9 @@ local function parse_eslint_output(output)
                 type = type,
                 source = "eslint"
             })
+        else
+            previous_line = line
         end
-
-        previous_line = line
     end
 
     if config.get().use_diagnostic then
