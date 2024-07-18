@@ -107,6 +107,10 @@ NOTE: When using `use_diagnostic = true`, Neovim will only show errors and warni
 If you want to see all errors or warnings, you can either use `auto_open_qflist = true` or the `get_output` content with a custom diagnostic:
 https://github.com/ceceppa/neovim/blob/main/lua/ceceppa/diagnostics.lua
 
+### What's the difference with LSP?
+
+This plugin captures the 'eslint' output for the entire project, whereas the built-in LSP only displays errors for the currently open buffers.
+
 ## Contributing
 
 Feel free to open issues or submit pull requests if you encounter any bugs or have suggestions for improvements. Your contributions are welcome!

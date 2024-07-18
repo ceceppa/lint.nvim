@@ -39,6 +39,39 @@ local function show_quickfix_list(output, autofocus)
     pcall(vim.api.nvim_set_current_win, win)
 end
 
+local function diagnostic_exists(diagnostic, diagnostics)
+    for _, d in ipairs(diagnostics) do
+        if d.filename == diagnostic.filename and d.lnum == diagnostic.lnum and d.col == diagnostic.col then
+            return true
+        end
+    end
+
+    return false
+end
+
+local function get_vim_diagnostic_list()
+    local diagnostics = {}
+    local buffer_names = {}
+
+    for _, buffer_number in ipairs(vim.api.nvim_list_bufs()) do
+        local buffer_diagnostics = vim.diagnostic.get(buffer_number)
+
+        if buffer_names[buffer_number] == nil then
+            buffer_names[buffer_number] = vim.api.nvim_buf_get_name(buffer_number)
+        end
+
+        for _, diagnostic in ipairs(buffer_diagnostics) do
+            table.insert(diagnostics, {
+                filename = buffer_names[buffer_number],
+                lnum = diagnostic.lnum,
+                col = diagnostic.col,
+            })
+        end
+    end
+
+    return diagnostics
+end
+
 local function parse_eslint_output(output)
     local errors = {}
 
@@ -47,6 +80,7 @@ local function parse_eslint_output(output)
     end
 
     local previous_line = ""
+    local vim_diagnostics = get_vim_diagnostic_list()
     for _, line in ipairs(output) do
         local line_number, col_number, type, message = line:match("%s?(%d+):(%d+)%s+(%w+)%s?(.*)$")
 
@@ -60,15 +94,25 @@ local function parse_eslint_output(output)
                 type = "WARN"
             end
 
-            table.insert(errors, {
-                filename = previous_line,
-                lnum = tonumber(line_number),
-                col = tonumber(col_number),
-                text = message,
-                severity = severity,
-                type = type,
-                source = "eslint"
-            })
+            local lnum = tonumber(line_number)
+            local col = tonumber(col_number)
+
+            -- Prevent duplicate diagnostics
+            if not diagnostic_exists({
+                    filename = previous_line,
+                    lnum = lnum,
+                    col = col
+                }, vim_diagnostics) then
+                table.insert(errors, {
+                    filename = previous_line,
+                    lnum = lnum,
+                    col = col,
+                    text = message,
+                    severity = severity,
+                    type = type,
+                    source = "lint"
+                })
+            end
         else
             previous_line = line
         end
