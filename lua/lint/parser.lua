@@ -39,16 +39,6 @@ local function show_quickfix_list(output, autofocus)
     pcall(vim.api.nvim_set_current_win, win)
 end
 
-local function diagnostic_exists(diagnostic, diagnostics)
-    for _, d in ipairs(diagnostics) do
-        if d.filename == diagnostic.filename and d.lnum == diagnostic.lnum and d.col == diagnostic.col then
-            return true
-        end
-    end
-
-    return false
-end
-
 local function get_vim_diagnostic_list()
     local diagnostics = {}
     local buffer_names = {}
@@ -97,22 +87,15 @@ local function parse_eslint_output(output)
             local lnum = tonumber(line_number)
             local col = tonumber(col_number)
 
-            -- Prevent duplicate diagnostics
-            if not diagnostic_exists({
-                    filename = previous_line,
-                    lnum = lnum,
-                    col = col
-                }, vim_diagnostics) then
-                table.insert(errors, {
-                    filename = previous_line,
-                    lnum = lnum,
-                    col = col,
-                    text = message,
-                    severity = severity,
-                    type = type,
-                    source = "lint"
-                })
-            end
+            table.insert(errors, {
+                filename = previous_line,
+                lnum = lnum,
+                col = col,
+                text = message,
+                severity = severity,
+                type = type,
+                source = "lint"
+            })
         else
             previous_line = line
         end
