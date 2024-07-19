@@ -101,5 +101,6 @@ return {
     get_output = lint.get_output,
     print_output = lint.print_output,
     is_running = lint.is_running,
-    is_active = is_active
+    is_active = is_active,
+    init = init
 }
