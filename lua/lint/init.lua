@@ -15,9 +15,9 @@ local function init(notification_interval)
         local lint_command = vim.fn.json_decode(vim.fn.readfile('package.json'))['scripts'][config.get().lint_command]
 
         if lint_command == nil then
-            vim.notify('No lint command (' .. config.get().lint_command .. ') found in package.json', 'warn', {
-                title = 'Lint'
-            })
+            -- vim.notify('No lint command (' .. config.get().lint_command .. ') found in package.json', 'warn', {
+            --     title = 'Lint'
+            -- })
             return false
         end
 
