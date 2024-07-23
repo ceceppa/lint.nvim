@@ -31,11 +31,16 @@ M.check = function(is_silent)
 
     _is_running = true
 
-    exec_async(config.get().package_manager .. ' ' .. config.get().lint_command, function(data)
-        _lint_output = parser.parse(data)
+    exec_async({
+        command = config.get().package_manager .. ' ' .. config.get().lint_command,
+        on_complete = function(data)
+            _lint_output = parser.parse(data)
 
-        _is_running = false
-    end, is_silent)
+            _is_running = false
+        end,
+        is_silent = true
+    })
+
 
     return true
 end
