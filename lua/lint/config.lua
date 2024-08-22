@@ -7,7 +7,6 @@ local config = {}
 --- @field watch_pattern string - ('*.{ts,tsx,js,jsx}') The pattern to watch for when running the lint command on file save
 --- @field package_manager string - ('yarn') The package manager to use when running the lint command
 --- @field use_diagnostic boolean - (false) When true the errors will be set as diagnostics
-
 local DEFAULT_CONFIG = {
     watch = true,
     auto_start = true,

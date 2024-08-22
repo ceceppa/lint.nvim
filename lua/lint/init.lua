@@ -42,9 +42,9 @@ local function init(notification_interval)
         vim.defer_fn(function()
             lint.check(true)
 
-            vim.notify('Linting started', 'info', {
-                title = 'Lint'
-            })
+            -- vim.notify('Linting started', 'info', {
+            --     title = 'Lint'
+            -- })
         end, notification_interval or 0)
 
         return true
